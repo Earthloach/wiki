@@ -2,8 +2,9 @@
 
 
 {% block title %} 
-    {{title}}
-{%endblock %} 
+    {{ title }}
+{%endblock title%} 
 {% block body %}
+    <a href="{% url 'edit' title %}">Edit the Page</a>
     {{content | safe}}
 {% endblock %}

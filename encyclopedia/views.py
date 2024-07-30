@@ -11,7 +11,7 @@ def index(request):
 def entry(request, title):
     content = util.get_entry(title)
     if content == None:
-        content = "## Error, Page was not found"
+        return render(request, "encyclopedia/error.html")
     content = markdown(content)
     return render(request, "encyclopedia/entry.html", 
                   {'content': content, 'title': title})
@@ -28,14 +28,28 @@ def create(request):
     if request.method == "POST":
         content = request.POST.get("content")
         title = request.POST.get("title")
-        if title in util.list_entries():
+        list = [entry.lower() for entry in util.list_entries()]
+        if title in list:
             return render(request, "encyclopedia/error.html")
         util.save_entry(title, content)
-        return redirect("entry", title=title)
+        return redirect("entry", title)
     return render(request, "encyclopedia/create.html")
         
-     
 def random(request):
     entries = util.list_entries()
     entry = entries[randint(0, len(entries) - 1)]
-    return redirect("entry", title=entry)
+    return redirect("entry", entry)
+
+def edit(request, title):
+    content = util.get_entry(title)
+    if content == None:
+        return render(request, "encyclopedia/error.html")
+    if request.method == "POST":
+        content = request.POST.get("content")
+        util.save_entry(title, content)
+        return redirect("entry", title)
+    return render(request, "encyclopedia/edit.html", {
+        'content': content, 
+        'title': title})
+        
+    
